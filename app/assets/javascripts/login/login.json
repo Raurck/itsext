@@ -1,0 +1,21 @@
+[{
+        "login": "agkufko",
+        "name": "Куфко Антон",
+        "password": "Test1234",
+        "loginPhone": "9122359000",
+        "sms": "1234",
+        "token": "ABCDEF",
+        "roles": ["admin", "its_user"],
+        "groupId": 1
+    },
+    {
+        "login": "lyapilin",
+        "name": "Ляпилин Виталий",
+        "password": "Test1234",
+        "loginPhone": "9222009132",
+        "sms": "1234",
+        "token": "FEDCBA",
+        "roles": ["user", "group_admin"],
+        "groupId": 22
+    }
+]

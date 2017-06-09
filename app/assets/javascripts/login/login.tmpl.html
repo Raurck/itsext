@@ -1,0 +1,72 @@
+<md-tabs md-dynamic-height="" md-border-bottom="" ng-if="!lc.isLoggedin()">
+    <md-tab id="loginpassword">
+        <md-tab-label>
+            <md-icon md-svg-icon="person"></md-icon>&nbsp;&nbsp;Логин</md-tab-label>
+        <md-tab-body>
+            <md-content class="md-padding" layout="row">
+                <div layout="column" class="loginholder">
+                    <form ng-submit="lc.auth()">
+                        <md-input-container>
+                            <label for="login">Логин</label>
+                            <input type="text" id="login" ng-model="lc.login" autofocus>
+                        </md-input-container>
+                        <md-input-container>
+                            <label for="password">Пароль</label>
+                            <input type="password" id="password" ng-model="lc.password">
+                        </md-input-container>
+                        <md-button md-no-ink="" class="md-raised md-primary" type="submit">Вход</md-button>
+                    </form>
+                </div>
+                <div>
+                    <h3 class="md-headline">Вход по паре логин/пароль</h3>
+                    <p>Если Вы являетесь зарегестрированным пользователем сервиса введите Ваши учетные данные.<br>Для регистрасии на портале обратитесь к Вашему менеджеру в компании ИТС.</p>
+                </div>
+            </md-content>
+        </md-tab-body>
+    </md-tab>
+    <md-tab id="loginsms">
+        <md-tab-label>
+            <md-icon md-svg-icon="phonelink"></md-icon>&nbsp;&nbsp;SMS</md-tab-label>
+        <md-tab-body>
+            <md-content class="md-padding" layout="row">
+                <div layout="column" data-ng-if="!lc.passwordSent" class="loginholder">
+                    <form ng-submit="lc.requestsms()">
+                        <md-input-container>
+                            <label for="phonenumber">Номер телефона</label>
+                            <input type="text" ng-model="lc.phonenumber" id="phonenumber" ui-mask="+7(999)-999-99-99" ui-mask-placeholder ui-mask-placeholder-char="_" autofocus />
+                        </md-input-container>
+                        <md-button md-no-ink="" class="md-raised md-primary" type="submit">Запросить код</md-button>
+                    </form>
+                </div>
+                <div layout="column" data-ng-if="lc.passwordSent" class="loginholder">
+                    <form ng-submit="lc.smsauth()">
+                        <div class="md-subhead">На номер</div>
+                        <div class="md-title">{{lc.phonenumber}}</div>
+                        <div class="md-subhead">отправлен код.</div>
+                        <md-input-container>
+                            <label for="smspassword">Код доступа</label>
+                            <input type="password" id="smspassword" ng-model="lc.sms" autofocus>
+                        </md-input-container>
+                        <md-button md-no-ink="" class="md-raised md-primary" type="submit">Вход</md-button>
+                        <md-button md-no-ink="" class="md-primary">запросить код повторно</md-button>
+                    </form>
+                </div>
+
+                <div>
+                    <h1 class="md-headline">SMS Login</h1>
+                    <p>Если Ваш сотовый телефон зарегистрирован в ИТС, мы можем отправить SMS с кодом доступа.</p>
+                </div>
+            </md-content>
+        </md-tab-body>
+    </md-tab>
+</md-tabs>
+
+<md-content class="md-padding" layout="row" ng-if="lc.isLoggedin()">
+    <div layout="column" class="loginholder">
+        <form ng-submit="lc.logoff()">
+            <h3 class="md-headline">Вы вошли в систему</h3>
+            <p>Для выхода нажмите кнопку.</p>
+            <md-button md-no-ink="" class="md-raised md-primary" type="submit">Выход</md-button>
+        </form>
+    </div>
+</md-content>

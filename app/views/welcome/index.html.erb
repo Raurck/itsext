@@ -1,0 +1,35 @@
+
+<body ng-app="itsApp" layout="column" ng-cloak ng-controller="layoutCtrl as lc">
+    <header>
+        <md-toolbar layout="row" class="md-whiteframe-3dp" style="align-items:center;">
+            <md-button class="menu md-warn" hide-gt-sm ng-click="ul.toggleList()" aria-label="Show User List">
+                <md-icon md-svg-icon="menu"></md-icon>
+            </md-button>
+            <img src="assets/its.png" alt="ITS logo" height="64px" />
+            <h1>Портал</h1>
+            <span flex="" class="flex"></span>
+            <div class="its-menu-right" ng-switch="lc.loggedin()">
+                <a ng-switch-when="false" class="waves-effect waves-light" href="#!/login" ui-sref="login"><i class="fa fa-sign-in" aria-hidden="true"></i><span class="zf-its-nav-text">Вход</span></a>
+                <span ng-switch-when="true">{{lc.user().login}}</span>
+            </div>
+        </md-toolbar>
+    </header>
+    <section flex layout="row">
+        <aside>
+            <md-sidenav md-is-locked-open="$mdMedia('gt-sm')" class="md-whiteframe-3dp" md-component-id="left" ng-click="ul.toggleList()" style="margin-right:5px">
+
+                <md-button ng-if="lc.loggedin()" class="md-primary md-raised" new-ticket-btn>Новая заявка</md-button>
+                <md-list-item ng-repeat="menuitem in menuitems" ng-click="goToState(menuitem)" class="noright">
+                    <p>{{ menuitem.name }}</p>
+                </md-list-item>
+
+
+            </md-sidenav>
+        </aside>
+        <main class="flex-noshrink">
+            <md-content flex id="content">
+                <ui-view></ui-view>
+
+            </md-content>
+        </main>
+    </section>

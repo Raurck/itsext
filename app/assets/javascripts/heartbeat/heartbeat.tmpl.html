@@ -1,0 +1,86 @@
+<div layout="row" flex="100">
+    <div flex="80">
+        <section class="md-whiteframe-z2 zf-heartbeat">
+            <md-toolbar class="md-hue-4">
+                <div class="md-toolbar-tools">
+                    <md-icon md-svg-icon="ticket" class="zf-icon-spared"></md-icon>
+
+                    <h2 flex="" class=" flex">Последние заявки</h2>
+
+
+                </div>
+            </md-toolbar>
+            <div class="zf-hb-content">
+                <its-ticket ng-repeat="ticket in tickets" ticket="ticket">
+                </its-ticket>
+            </div>
+        </section>
+
+    </div>
+    <div layout="column">
+        <section class="md-whiteframe-z2 zf-heartbeat">
+            <md-toolbar class="md-hue-4">
+                <div class="md-toolbar-tools">
+                    <md-icon md-svg-icon="ticket" class="zf-icon-spared"></md-icon>
+
+                    <h2 flex="" class=" flex">Заявки</h2>
+
+
+                </div>
+            </md-toolbar>
+            <div class="zf-hb-content">
+                <table>
+                    <thead>
+                        <th>Период</th>
+                        <th>Открыто</th>
+                        <th>Закрыто</th>
+                    </thead>
+                    <tr>
+                        <td>Сегодня</td>
+                        <td>50</td>
+                        <td>57</td>
+
+                    </tr>
+                    <tr>
+                        <td>Неделя</td>
+                        <td>157</td>
+                        <td>154</td>
+                    </tr>
+                    <tr>
+                        <td>Месяц</td>
+                        <td>357</td>
+                        <td>354</td>
+                    </tr>
+
+                </table>
+
+                <md-button class="md-primary" ui-sref="tickets.open" target="_blank">Сейчас в работе&nbsp;5</md-button>
+        </section>
+
+        <section class="md-whiteframe-z2 zf-heartbeat">
+            <md-toolbar class="md-hue-4">
+                <div class="md-toolbar-tools">
+                    <md-icon md-svg-icon="contract" class="zf-icon-spared"></md-icon>
+                    <h2 flex="" class=" flex">Договор</h2>
+                </div>
+            </md-toolbar>
+            <div class="zf-hb-content">
+                Договор 1 от 15.10.2015
+            </div>
+            <md-subheader class="md-no-sticky">Опции договора</md-subheader>
+            <md-list-item ng-repeat="service in services" ng-click="goToService(service, $event)" class="noright" ng-class="{'zf-service-warning':service.disabled}">
+                <img alt="{{ service.name }}" ng-src="{{ service.img }}" class="md-avatar">
+                <p>{{ service.name }}<br>
+                    <span ng-show="service.disabled" class="md-caption zf-warning-text">Сервис не подключен</span>
+                </p>
+                <md-icon ng-disabled="!service.disabled" md-svg-icon="communication:email" ng-click="doSecondaryAction($event)" aria-label="Send Email" class="md-secondary md-hue-3">
+                    <md-tooltip md-direction="left">Заказать услугу</md-tooltip>
+                </md-icon>
+                <md-icon ng-disabled="service.disabled" class="md-secondary" ng-click="doSecondaryAction($event)" aria-label="Chat" md-svg-icon="communication:message">
+                    <md-tooltip md-direction="left">Создать обращение по сервису</md-tooltip>
+                </md-icon>
+            </md-list-item>
+            </md-list>
+        </section>
+        </div>
+    </div>

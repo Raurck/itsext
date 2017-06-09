@@ -1,0 +1,65 @@
+<form ng-cloak class="new-ticket">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Новая заявка</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="ntVm.closeDialog(false)">
+                <i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <section flex layout="row" style="justify-content:space-between; align-items:baseline">
+                <md-input-container class="ticket-service">
+                    <label>Сервис</label>
+                    <md-select ng-model="ntVm.ticket.ticketService">
+                        <md-option ng-repeat="service in ntVm.services" value="{{service}}">{{service}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container>
+                    <div style="height:20px"></div>
+                    <md-checkbox aria-label="Инцидент наблюдается на всех кмпьютерах сети" ng-model="ntVm.ticket.massive" class="md-primary">
+                        Наблюдается на всех компьютерах сети
+                    </md-checkbox>
+                </md-input-container>
+            </section>
+            <section>
+                <md-input-container class="ticket-ip-address">
+                    <label>IP адрес Вашего компьютера</label>
+                    <input type="text" ng-model="ntVm.ticket.ipaddress" required>
+                    <div ng-message="ntVm.checkIpAddress()">Неверный формат</div>
+                </md-input-container>
+                <md-button class="md-icon-button" ng-click="ntVm.closeDialog(false)">
+                    <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                </md-button>
+            </section>
+            <section flex layout="row" style="justify-content:space-between; align-items:baseline">
+                <md-input-container class="ticket-ip-address">
+                    <label>Контактное лицо</label>
+                    <input type="text" ng-model="ntVm.ticket.contact" required>
+                </md-input-container>
+
+                <md-input-container class="ticket-ip-address">
+                    <label>Контактный телефон</label>
+                    <input type="text" ng-model="ntVm.ticket.contact_phone" ui-mask="+7(999)-999-99-99" ui-mask-placeholder ui-mask-placeholder-char="_">
+                </md-input-container>
+            </section>
+            <section>
+                <md-input-container>
+                    <label>Причина обращения</label>
+                    <textarea name="ticket-body" ng-model="ntVm.ticket.body" required md-maxlength="3000"></textarea>
+                    <div ng-messages="userForm.ticket-body.$error" ng-show="userForm.bio.$dirty">
+                        <div ng-message="required">Необходимо указать причину обращения</div>
+                        <div ng-message="md-maxlength">Уменьшите количесто символов до 3000</div>
+                    </div>
+                </md-input-container>
+            </section>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button class="md-raised md-primary" ng-click="ntVm.closeDialog(true)">Создать</md-button>
+        <md-button class="md-warn" ng-click="ntVm.closeDialog(false)"> Отмена</md-button>
+    </md-dialog-actions>
+</form>

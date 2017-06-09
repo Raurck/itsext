@@ -1,0 +1,8 @@
+<article class="ticket">
+    <md-subheader class="md-primary">
+        <div>Заявка <span ng-bind="$ctrl.ticket.id"></span>открыта</div>
+        <div>7 Пятниц, <span ng-bind="$ctrl.ticket.fullname"></span>,<span ng-bind="$ctrl.ticket.address"></span> <span ng-bind="$ctrl.ticket.create_time"></span></div>
+    </md-subheader>
+    <post ng-bind="$ctrl.ticket.ticket_body">
+    </post>
+</article>
