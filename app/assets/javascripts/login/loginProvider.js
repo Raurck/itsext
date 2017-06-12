@@ -44,10 +44,10 @@
             }
         }
 
-        loginService.$inject = ['$q', '$http', '$log'];
+        loginService.$inject = ['$q', '$http', '$log','$rootScope','$window'];
 
-        function loginService($q, $http, $log) {
-            return new LoginServiceFn($q, $http, $log, loginUserPasswordPath, loginSMSRequestPath, loginSMSResponcePath, loggedUser);
+        function loginService($q, $http, $log,$rootScope,$window) {
+            return new LoginServiceFn($q, $http, $log, $rootScope,$window, loginUserPasswordPath, loginSMSRequestPath, loginSMSResponcePath, loggedUser);
         }
     }
 
@@ -60,7 +60,7 @@
      * @constructor
      */
 
-    function LoginServiceFn($q, $http, $log, loginUserPasswordPath, loginSMSRequestPath, loginSMSResponcePath, loggedUser) {
+    function LoginServiceFn($q, $http, $log, $rootScope,$window,loginUserPasswordPath, loginSMSRequestPath, loginSMSResponcePath, loggedUser) {
         var self = this;
         self.currentUser = new ActiveUser();
         self.passwordSent = null;
@@ -73,7 +73,7 @@
                 name: 'Куфко Антон',
                 loginPhone: '9122359000',
                 sms: '1234',
-                token: 'ABCDEF',
+                auth_token: 'ABCDEF',
                 roles: ['admin', 'its_user'],
                 groupId: 1
             },
@@ -83,7 +83,7 @@
                 password: 'Test1234',
                 loginPhone: '9222009132',
                 sms: '1234',
-                token: 'FEDCBA',
+                auth_token: 'FEDCBA',
                 roles: ['user', 'group_admin'],
                 groupId: 22
             }
@@ -118,7 +118,7 @@
         }
 
         function isLoggedin() {
-            return !!(self.currentUser.login);
+            return !!(self.currentUser.access_token);
         }
         // Check nuber is 10 digit number, whithout any other chars
         function isPasswordSent() {
@@ -152,13 +152,25 @@
             }
         }
 
+        function graceReject(responce){
+            return $q.when({success:false, responce:responce});
+        }
+
+        function saveTokenData(responce) {
+            var data = responce.data;
+            if (!data.access_token) {
+                return $q.reject({ response: responce, success: false });
+            }
+            $log.debug(data);
+            self.currentUser.assignCurrent(data);
+            $window.sessionStorage.setItem('user', self.currentUser);
+            $rootScope.$broadcast('loginService:loggedin');
+            return $q.resolve({ response: responce, success: true });
+        };
+
         //Try to authorize using user name and password
         function authorize(userName, userPassword) {
-            return $http.post('auth_user', { email: userName, password: userPassword }).then(
-                function(responce) {
-                    console.log(responce);
-                }
-            );
+            return $http.post('auth_user', { email: userName, password: userPassword }).then(saveTokenData,graceReject);
             /*
             var current = users.find(function(item) {
                 if (item.login == userName && item.password == userPassword) {
@@ -221,7 +233,7 @@
         var auModel = this;
         auModel.name = null;
         auModel.login = null;
-        auModel.token = null;
+        auModel.access_token = null;
         auModel.roles = [];
         auModel.assignCurrent = assignCurrent;
 
@@ -238,9 +250,9 @@
         function assignCurrent(dataObj) {
             auModel.name = dataObj.name;
             auModel.loginPhone = dataObj.loginPhone;
-            auModel.login = dataObj.login;
+            auModel.expires = new Date(dataObj.expires);
             auModel.roles = dataObj.roles;
-            auModel.token = dataObj.token;
+            auModel.access_token = dataObj.access_token;
         }
 
     }

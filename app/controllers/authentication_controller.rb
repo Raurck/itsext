@@ -15,9 +15,13 @@ class AuthenticationController < ApplicationController
   def payload(user)
 
     return nil unless user and user.id
-    {
-      auth_token: JsonWebToken.encode({user_id: user.id}),
-      user: {id: user.id, email: user.email}
+    #make a hash with token data
+    info = {name: user.name, 
+      email: user.email,
+      #it will be valid for 18 hours
+      expires:(DateTime.now.to_time + 68400)  
     }
+    #put token into hash and return
+    info.merge!(access_token: JsonWebToken.encode(info))
   end
 end

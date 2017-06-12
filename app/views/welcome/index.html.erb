@@ -10,7 +10,7 @@
             <span flex="" class="flex"></span>
             <div class="its-menu-right" ng-switch="lc.loggedin()">
                 <a ng-switch-when="false" class="waves-effect waves-light" href="#!/login" ui-sref="login"><i class="fa fa-sign-in" aria-hidden="true"></i><span class="zf-its-nav-text">Вход</span></a>
-                <span ng-switch-when="true">{{lc.user().login}}</span>
+                <span ng-switch-when="true">{{lc.user().name}}</span>
             </div>
         </md-toolbar>
     </header>

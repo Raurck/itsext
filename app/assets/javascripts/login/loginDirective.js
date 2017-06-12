@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
     angular
         .module('login')
@@ -7,7 +7,7 @@
                 '$transition$': '<'
             },
             templateUrl: 'assets/login/login.tmpl.html',
-            controller: ['login.loginService', '$mdSidenav', '$mdBottomSheet', '$log', '$state', '$scope', LoginController],
+            controller: LoginController,
             controllerAs: 'lc'
         });
 
@@ -18,6 +18,8 @@
      * @param $mdBottomSheet
      * @constructor
      */
+    LoginController.$inject = ['login.loginService', '$mdSidenav', '$mdBottomSheet', '$log', '$state', '$scope'];
+
     function LoginController(loginService, $mdSidenav, $mdBottomSheet, $log, $state, $scope) {
         var self = this;
 
@@ -25,61 +27,59 @@
         self.sms = '';
         self.login = '';
         self.password = '';
-        self.isLoggedin = loginService.isLoggedin;
 
-        this.requestsms = function() {
-            $log.debug('requesting SMS for ', this.phonenumber);
-            loginService.sendSms(this.phonenumber).then(
-                function(data) {
+        self.isLoggedin = loginService.isLoggedin;
+        self.requestsms = requestsms;
+        self.auth = auth;
+        self.smsauth = smsauth;
+        self.logoff = logoff;
+
+        //////
+
+        function requestsms() {
+            $log.debug('requesting SMS for ', self.phonenumber);
+            loginService.sendSms(self.phonenumber).then(
+                function () {
                     self.passwordSent = loginService.isPasswordSent();
                 },
-                function(data) {
-                    loginFailed('SMS request filed');
-                }
+                loginFailed
             );
+        }
 
-        };
-
-        this.auth = function() {
-            loginService.authorize(this.login, this.password).then(
-                function() {
-                    if (self.isLoggedin) {
-                        $log.debug('Logged in');
-                        if (self.$transition$.params('to').backUrl) {
-                            $state.go(self.$transition$.params('to').backUrl);
-                        }
-                    } else {
-                        loginFailed('Logged failed');
-                    }
-                },
-                function() {
-                    loginFailed('Logged failed');
-
-                }
+        function auth() {
+            loginService.authorize(self.login, self.password).then(
+                afterAuth,
+                loginFailed
             );
+        }
 
-        };
-
-        this.smsauth = function() {
-            loginService.authorizePhone(this.sms).then(
-                function() {
-                    $log.debug('Logged in');
-                    $log.debug(self.$transition$.params('to'));
-                    if (self.$transition$.params('to').backUrl) {
-                        $state.go(self.$transition$.params('to').backUrl);
-                    }
-                },
-                function() { loginService.clearAuth(); }
+        function smsauth() {
+            loginService.authorizePhone(self.sms).then(
+                afterAuth,
+                loginFailed
             );
-        };
+        }
 
-        this.logoff = function() {
+
+        function logoff() {
             loginService.clearAuth();
-        };
+        }
 
+        function afterAuth(result) {
+            if (self.isLoggedin() === true) {
+                $log.debug('Logged in');
+                $log.debug(self.$transition$.params('to'));
+                if (self.$transition$.params('to').backUrl) {
+                    $state.go(self.$transition$.params('to').backUrl);
+                }
+            } else {
+                loginFailed(result)
+            }
+        }
 
-        function loginFailed(message) {
-            $log.debug(message);
+        function loginFailed(result) {
+            $log.debug('Logged failed');
+            $log.debug(result);
             loginService.clearAuth();
         }
     }
