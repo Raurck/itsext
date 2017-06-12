@@ -1,21 +1,20 @@
-[{
-        "login": "agkufko",
+[
+    {
         "name": "Куфко Антон",
         "password": "Test1234",
         "loginPhone": "9122359000",
         "sms": "1234",
-        "token": "ABCDEF",
-        "roles": ["admin", "its_user"],
-        "groupId": 1
+        "access_token": "ABCDEF",
+        "expires":"2025-01-01T00:00:00.000Z",
+        "roles": ["admin", "its_user"]
     },
     {
-        "login": "lyapilin",
         "name": "Ляпилин Виталий",
         "password": "Test1234",
         "loginPhone": "9222009132",
         "sms": "1234",
-        "token": "FEDCBA",
-        "roles": ["user", "group_admin"],
-        "groupId": 22
+        "access_token": "FEDCBA",
+        "expires":"2025-01-01T00:00:00.000Z",
+        "roles": ["user", "group_admin"]
     }
 ]

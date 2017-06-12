@@ -27,14 +27,10 @@
     function loginConfigFn(loginServiceProvider) {
         loginServiceProvider.setLoginSMSRequestPath('/sms/');
         loginServiceProvider.setLoggedUser({
-            login: 'agkufko',
-            password: 'Test1234',
-            loginPhone: '9122359000',
             name: 'Куфко Антон',
-            sms: '1234',
-            token: 'ABCDEF',
+            access_token:'FACE',
+            expires: new Date((new Date()).valueOf() + 68400000),
             roles: ['admin', 'its_user'],
-            groupId: 1
         });
     }
 

@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
     angular
         .module('login')
@@ -35,60 +35,30 @@
         function setLoggedUser(value) {
             if (value) {
                 loggedUser = {};
-                loggedUser.login = value.login;
-                loggedUser.loginPhone = value.loginPhone;
                 loggedUser.name = value.name;
-                loggedUser.token = value.token;
+                loggedUser.access_token = value.access_token;
+                loggedUser.expires = value.expires;
                 loggedUser.roles = value.roles;
-                loggedUser.groupId = value.groupId;
             }
         }
 
-        loginService.$inject = ['$q', '$http', '$log','$rootScope','$window'];
+        loginService.$inject = ['$q', '$http', '$log', '$rootScope', '$window'];
 
-        function loginService($q, $http, $log,$rootScope,$window) {
-            return new LoginServiceFn($q, $http, $log, $rootScope,$window, loginUserPasswordPath, loginSMSRequestPath, loginSMSResponcePath, loggedUser);
+        function loginService($q, $http, $log, $rootScope, $window) {
+            return new LoginServiceFn($q, $http, $log, $rootScope, $window, loginUserPasswordPath, loginSMSRequestPath, loginSMSResponcePath, loggedUser);
         }
     }
 
     /**
      * Login Service
-     * Uses embedded, hard-coded data model; acts asynchronously to simulate
-     * remote data service call(s).
-     *
-     * @returns {{loadAll: Function}}
-     * @constructor
      */
 
-    function LoginServiceFn($q, $http, $log, $rootScope,$window,loginUserPasswordPath, loginSMSRequestPath, loginSMSResponcePath, loggedUser) {
+    function LoginServiceFn($q, $http, $log, $rootScope, $window, loginUserPasswordPath, loginSMSRequestPath, loginSMSResponcePath, loggedUser) {
         var self = this;
         self.currentUser = new ActiveUser();
         self.passwordSent = null;
         self.loginPhone = null;
         onInit();
-
-        var users = [{
-                login: 'agkufko',
-                password: 'Test1234',
-                name: 'Куфко Антон',
-                loginPhone: '9122359000',
-                sms: '1234',
-                auth_token: 'ABCDEF',
-                roles: ['admin', 'its_user'],
-                groupId: 1
-            },
-            {
-                login: 'lyapilin',
-                name: 'Ляпилин Виталий',
-                password: 'Test1234',
-                loginPhone: '9222009132',
-                sms: '1234',
-                auth_token: 'FEDCBA',
-                roles: ['user', 'group_admin'],
-                groupId: 22
-            }
-        ];
-
 
         // exports Service object
         var service = {
@@ -105,11 +75,18 @@
 
         //////Realistaion
 
-
-
         function onInit() {
+            try {
+                var curUser = JSON.parse($window.sessionStorage.getItem('user'));
+                if (curUser && (new Date(curUser.expires)).valueOf() >= (new Date()).valueOf()) {
+                    self.currentUser.assignCurrent(curUser);
+                    return;
+                }
+            } catch (ex) {
+
+            }
             if (loggedUser) {
-                self.currentUser.assignCurrent(loggedUser);
+                saveTokenData({data:loggedUser});
             }
         }
 
@@ -118,7 +95,7 @@
         }
 
         function isLoggedin() {
-            return !!(self.currentUser.access_token);
+            return !!(self.currentUser.access_token && self.currentUser.expires >= (new Date()).valueOf());
         }
         // Check nuber is 10 digit number, whithout any other chars
         function isPasswordSent() {
@@ -142,7 +119,7 @@
                 url: loginSMSRequestPath
             }).then();
 
-            var sendResult = (users.filter(function(element) {
+            var sendResult = (users.filter(function (element) {
                 if (element.loginPhone == number) {
                     return value;
                 }
@@ -152,46 +129,42 @@
             }
         }
 
-        function graceReject(responce){
-            return $q.when({success:false, responce:responce});
+        function graceReject(responce) {
+            return $q.when({
+                success: false,
+                responce: responce
+            });
         }
 
         function saveTokenData(responce) {
             var data = responce.data;
-            if (!data.access_token) {
-                return $q.reject({ response: responce, success: false });
+            if (!data || !data.access_token) {
+                return $q.reject({
+                    response: responce,
+                    success: false
+                });
             }
             $log.debug(data);
             self.currentUser.assignCurrent(data);
-            $window.sessionStorage.setItem('user', self.currentUser);
             $rootScope.$broadcast('loginService:loggedin');
-            return $q.resolve({ response: responce, success: true });
+            $window.sessionStorage.setItem('user', JSON.stringify(self.currentUser));
+            return $q.resolve({
+                response: responce,
+                success: true
+            });
         };
 
         //Try to authorize using user name and password
         function authorize(userName, userPassword) {
-            return $http.post('auth_user', { email: userName, password: userPassword }).then(saveTokenData,graceReject);
-            /*
-            var current = users.find(function(item) {
-                if (item.login == userName && item.password == userPassword) {
-                    return true;
-                }
-                return false;
-            });
-
-            current = Array.isArray(current) ? current[0] : current;
-            if (current) {
-                self.currentUser.assignCurrent(current);
-                $log.debug('Login success');
-                return $q.when(true);
-            }
-            return $q.when(false);
-            */
+            return $http.post('auth_user', {
+                email: userName,
+                password: userPassword
+            }).then(saveTokenData, graceReject);
         }
 
         //Try to authorize using user SMS code
         function authorizePhone(userSms) {
-            var current = users.find(function(item) {
+            var current = users.find(function (item) {
                 if (item.loginPhone == self.loginPhone && item.sms == userSms) {
                     return true;
                 }
@@ -211,6 +184,7 @@
         //Clear aothentication data
         function clearAuth() {
             self.currentUser = new ActiveUser();
+            $window.sessionStorage.setItem('user', null);
             self.passwordSent = null;
             self.loginPhone = null;
         }
@@ -232,19 +206,10 @@
     function ActiveUser() {
         var auModel = this;
         auModel.name = null;
-        auModel.login = null;
         auModel.access_token = null;
+        auModel.expires = new Date();
         auModel.roles = [];
         auModel.assignCurrent = assignCurrent;
-
-        /*
-                return {
-                    name: auModel.name,
-                    login: auModel.login,
-                    token: auModel.token,
-                    roles: auModel.roles,
-                    assignCurrent: assignCurrent
-                };*/
 
         //////Realisation
         function assignCurrent(dataObj) {
