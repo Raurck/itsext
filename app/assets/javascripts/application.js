@@ -10,12 +10,12 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require node_modules/angular/angular.js
-//= require node_modules/angular-animate/angular-animate.js
-//= require node_modules/angular-aria/angular-aria.js
-//= require node_modules/angular-material/angular-material.js
-//= require node_modules/angular-ui-mask/dist/mask.js
-//= require node_modules/angular-ui-router/release/angular-ui-router.js
+//= require angular/angular.js
+//= require angular-animate/angular-animate.js
+//= require angular-aria/angular-aria.js
+//= require angular-material/angular-material.js
+//= require angular-ui-mask/dist/mask.js
+//= require angular-ui-router/release/angular-ui-router.js
 //= require autofocus/autofocus.js
 //= require login/login.js
 //= require login/loginProvider.js
@@ -32,7 +32,5 @@
 //= require main/newTicketBtn.directive.js
 //= require newTicket/newTicket.component.js
 
-//= require jquery
-//= require jquery_ujs
-//= require turbolinks
+//= require jquery/dist/jquery.js
 //= require_tree .
